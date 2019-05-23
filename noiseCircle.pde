@@ -19,7 +19,7 @@ FFT fft;
 int size = 512;
 float[] samps = new float[size];
 
-float resolution = 800; // how many points in the circle, default 400
+float resolution = 900; // how many points in the circle, default 400
 float rad = 150;
 float x = 1;
 float y = 1;
@@ -35,10 +35,14 @@ float nAmp = 1; // noise amplitude
 
 boolean filled = false;
 
-float[] xArr = new float[]{200,400,600,200,400,600,200,400,600};
-float[] yArr = new float[]{200,200,200,400,400,400,600,600,600};
+float[] xArr = new float[]{400};//new float[]{200,400,600,200,400,600,200,400,600};
+float[] yArr = new float[]{400};//new float[]{200,200,200,400,400,400,600,600,600};
+
 int ti;
-int tn = 9;
+int tn = 1;
+
+
+
 
 void setup() {
   background(0);
@@ -62,7 +66,7 @@ void draw() {
   
   
   
-  fill(0, 25);
+  fill(0, 12);
   rect(-1,-1,width+1,height+1);
   
   float tx = map(random(varc), 0, .5, 0,200);
@@ -100,11 +104,11 @@ void draw() {
   
 
   beginShape();
-  for (float a=t; a<=6*TWO_PI+t; a+=TWO_PI/resolution) {
+  for (float a=t; a<=TWO_PI+t; a+=TWO_PI/resolution) {
     
     tPeriod = map(cos(t*TWO_PI/4), -1,1,5,0.1);
     nInt = tPeriod;
-    temp = map(nInt, 5,.1, .8,1);
+    temp = map(nInt, 5,.1, 0,.51); //.51->1
 
     nVal = map(noise(cos(a+aMod)*nInt+1, sin(a+aMod)*nInt+1, t ), 0.0, 1.0, nAmp, 1.0); // map noise value to match the amplitude
     
@@ -117,8 +121,10 @@ void draw() {
     //y = sin(a+aMod)*temp/((1-temp)*(1+cos(a+aMod)))*rad *nVal;
     
     //spiral
-    //x = cos(a+aMod)*temp*(temp+(1-2*temp)*(a+aMod))*rad *nVal;
-    //y = sin(a+aMod)*temp*(temp+(1-2*temp)*(a+aMod))*rad *nVal;
+    //x = cos(a+aMod)*temp*(temp+(1-3*temp)*(a*a*sin(a)+aMod))*rad *nVal;
+    y = sin(a+aMod)*temp*(temp+(1-2*temp)*(a+aMod))*rad *nVal;
+    
+    x = (sin(a+aMod)*temp + (1-temp)*sin(1*petalMod*a+aMod)*sin(a+aMod))*rad *nVal;
 
     //    x = map(a, 0,TWO_PI, 0,width);
     //    y = sin(a)*rad *nVal +height/2;
