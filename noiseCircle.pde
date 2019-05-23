@@ -19,7 +19,7 @@ FFT fft;
 int size = 512;
 float[] samps = new float[size];
 
-float resolution = 400; // how many points in the circle, default 400
+float resolution = 10; // how many points in the circle, default 400
 float rad = 150;
 float x = 1;
 float y = 1;
@@ -32,13 +32,14 @@ float tChange = .002; // how quick time flies
 float nVal; // noise value
 float nInt = 1; // noise intensity
 float nAmp = 1; // noise amplitude
+float nAmp2 = 1; // noise amplitude
 
 boolean filled = false;
 
-float[] xArr = new float[]{200,400,600,200,400,600,200,400,600};
-float[] yArr = new float[]{200,200,200,400,400,400,600,600,600};
+float[] xArr = new float[]{300,500,200,400,600,200,400,600,200,400,600};
+float[] yArr = new float[]{400,400,200,200,200,400,400,400,600,600,600};
 int ti;
-int tn = 9;
+int tn = 2;
 
 void setup() {
   background(0);
@@ -61,8 +62,12 @@ void draw() {
   float varc = variance(samps, size, mean);
   
   
-  
-  fill(0, 25);
+  if (filled) {
+    fill(255,25);
+  }
+  else {
+    fill(0, 55);
+  }
   rect(-1,-1,width+1,height+1);
   
   float tx = map(random(varc), 0, .5, 0,200);
@@ -74,7 +79,7 @@ void draw() {
   transY = yArr[ti];
   ti = (ti + 1) % tn;
   
-  translate(transX+translateJitter*sx*tx,transY+translateJitter*sy*ty);
+  
   
   fft.forward(input.mix);
   
@@ -82,29 +87,36 @@ void draw() {
 
   if (filled) {
     //noStroke();
-    //fill(255);
+    noFill();
     
-    stroke(255,0,0);
+    stroke(0);
     strokeWeight(1);
   } 
   else {
     noFill();
     stroke(255);
-    strokeWeight(1);
+    strokeWeight(6);
   }
   nInt = map(mouseX, 0, width, 5, 0.1); // map mouseX to noise intensity
-  nAmp = map(pitch, 0, .5, 1.0, 0.6); // map mouseY to noise amplitude
+  nAmp = map(pitch, 0, .5, .6, 0.5); // map mouseY to noise amplitude
+  
+  nAmp2 = map(pitch, 0, .5, 1.0, 0.5); // map mouseY to noise amplitude
   
    // map mouseX to noise intensity
   //println(nInt);
-  
+  if (ti % 2 == 0) {
+    translate(transX+100*nAmp+translateJitter*sx*tx,transY+translateJitter*sy*ty);
+  }
+  else {
+    translate(transX-100*nAmp+translateJitter*sx*tx,transY+translateJitter*sy*ty);
+  }
 
   beginShape();
-  for (float a=t; a<=2*TWO_PI+t; a+=TWO_PI/resolution) {
+  for (float a=t; a<=4*TWO_PI+t; a+=TWO_PI/resolution) {
     
     tPeriod = map(cos(t*TWO_PI/4), -1,1,5,0.1);
     nInt = tPeriod;
-    temp = map(nInt, 5,.1, 0,1);
+    temp = map(nAmp2, 0,.5, 0.8,1);
 
     nVal = map(noise(cos(a+aMod)*nInt+1, sin(a+aMod)*nInt+1, t ), 0.0, 1.0, nAmp, 1.0); // map noise value to match the amplitude
     
